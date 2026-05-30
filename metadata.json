@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Remix: EDU-AI",
+  "description": "EDU-AI is an AI-powered Career Operating System that transforms resumes, projects, certifications, and skills into intelligent career insights. The platform analyzes student profiles, identifies skill gaps, generates personalized learning roadmaps, and connects users with relevant jobs, internships, and industry opportunities through advanced AI-driven career intelligence.\n",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
