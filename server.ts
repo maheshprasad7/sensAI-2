@@ -16,19 +16,31 @@ const PORT = Number(process.env.PORT) || 3002;
 
 app.use(express.json());
 
-// Shared Gemini client utility
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+// Shared Gemini client utility — initialized lazily to avoid crashing if GEMINI_API_KEY is not set yet
+let ai: InstanceType<typeof GoogleGenAI>;
+try {
+  ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY || "",
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      }
     }
-  }
-});
+  });
+} catch (e) {
+  console.warn("GoogleGenAI initialization failed (likely missing GEMINI_API_KEY). AI features will use fallbacks.");
+  ai = null as any;
+}
 
 // API health endpoint
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", mode: process.env.NODE_ENV || "development" });
+  res.json({
+    status: "ok",
+    mode: process.env.NODE_ENV || "development",
+    hasGeminiKey: !!process.env.GEMINI_API_KEY,
+    hasGithubToken: !!process.env.GITHUB_TOKEN,
+    isVercel: !!process.env.VERCEL
+  });
 });
 
 // GET /api/github/repos - Fetches repository list for a specific GitHub user
