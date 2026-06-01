@@ -2,7 +2,6 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 import multer from "multer";
@@ -1855,9 +1854,14 @@ Produce a strict JSON array of matched job opportunities. Never output surroundi
   }
 });
 
-// Vite middleware integration
+// Export the Express app for Vercel serverless functions
+export default app;
+
+// Vite middleware integration (only used when running locally, NOT on Vercel)
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
+    // Dynamically import Vite only for local dev (not available in serverless)
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -1877,4 +1881,7 @@ async function startServer() {
   });
 }
 
-startServer();
+// Only start the local dev/production server when NOT running as a Vercel serverless function
+if (!process.env.VERCEL) {
+  startServer();
+}
