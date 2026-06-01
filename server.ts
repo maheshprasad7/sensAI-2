@@ -1871,9 +1871,11 @@ export default app;
 
 // Vite middleware integration (only used when running locally, NOT on Vercel)
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
     // Dynamically import Vite only for local dev (not available in serverless)
-    const { createServer: createViteServer } = await import("vite");
+    // We use a variable to prevent Vercel's static bundler from trying to bundle Vite
+    const viteModule = "vite";
+    const { createServer: createViteServer } = await import(viteModule);
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
